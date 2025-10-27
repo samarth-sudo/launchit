@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!email || !user_type || !['founder', 'investor'].includes(user_type)) {
+    if (!email || !user_type || !['founder', 'investor', 'early_adopter'].includes(user_type)) {
       return NextResponse.json(
         { error: 'Missing or invalid required fields' },
         { status: 400 }

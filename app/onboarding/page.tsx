@@ -16,36 +16,20 @@ export default function OnboardingPage() {
     setLoading(true);
 
     try {
-      // If early adopter, redirect to profile setup first
-      if (userType === 'early_adopter') {
-        router.push('/onboarding/early-adopter');
+      // Redirect to detailed onboarding pages for each user type
+      if (userType === 'founder') {
+        router.push('/onboarding/founder');
         return;
       }
 
-      // Create user profile in database
-      const response = await fetch('/api/users/onboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clerk_id: user.id,
-          email: user.emailAddresses[0]?.emailAddress,
-          user_type: userType,
-          profile: {
-            name: user.fullName || user.firstName || 'User',
-            avatar: user.imageUrl,
-          },
-        }),
-      });
+      if (userType === 'investor') {
+        router.push('/onboarding/investor');
+        return;
+      }
 
-      if (response.ok) {
-        // Redirect based on user type
-        if (userType === 'founder') {
-          router.push('/dashboard/founder');
-        } else {
-          router.push('/discover');
-        }
-      } else {
-        alert('Failed to complete onboarding');
+      if (userType === 'early_adopter') {
+        router.push('/onboarding/early-adopter');
+        return;
       }
     } catch (error) {
       console.error('Onboarding error:', error);
