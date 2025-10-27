@@ -77,12 +77,12 @@ export async function POST(request: NextRequest) {
       founder_id: user.id,
       title,
       description_7words,
-      full_description: full_description || null,
+      full_description: full_description || undefined,
       demo_video,
       pricing,
       category,
       tags: tags || [],
-      ai_generated_summary,
+      ai_generated_summary: ai_generated_summary ?? undefined,
     });
 
     return NextResponse.json({
