@@ -174,7 +174,7 @@ export async function getAIRecommendedFeed(
   limit: number = 20
 ): Promise<Product[]> {
   const categoriesCondition = preferences.preferred_categories.length > 0
-    ? sql`AND p.category = ANY(${preferences.preferred_categories})`
+    ? sql`AND p.category = ANY(${JSON.stringify(preferences.preferred_categories)}::jsonb::text[])`
     : sql``;
 
   const result = await sql<Product>`
