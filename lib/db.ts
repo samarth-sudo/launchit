@@ -173,19 +173,29 @@ export async function getAIRecommendedFeed(
   preferences: InvestorPreferences,
   limit: number = 20
 ): Promise<Product[]> {
-  const categoriesCondition = preferences.preferred_categories.length > 0
-    ? sql`AND p.category = ANY(${JSON.stringify(preferences.preferred_categories)}::jsonb::text[])`
-    : sql``;
+  let result;
 
-  const result = await sql<Product>`
-    SELECT p.* FROM products p
-    LEFT JOIN interactions i ON p.id = i.product_id AND i.investor_id = ${investorId}
-    WHERE p.status = 'active'
-      AND i.id IS NULL
-      ${categoriesCondition}
-    ORDER BY p.like_count DESC, p.created_at DESC
-    LIMIT ${limit}
-  `;
+  if (preferences.preferred_categories.length > 0) {
+    result = await sql<Product>`
+      SELECT p.* FROM products p
+      LEFT JOIN interactions i ON p.id = i.product_id AND i.investor_id = ${investorId}
+      WHERE p.status = 'active'
+        AND i.id IS NULL
+        AND p.category = ANY(${JSON.stringify(preferences.preferred_categories)}::jsonb::text[])
+      ORDER BY p.like_count DESC, p.created_at DESC
+      LIMIT ${limit}
+    `;
+  } else {
+    result = await sql<Product>`
+      SELECT p.* FROM products p
+      LEFT JOIN interactions i ON p.id = i.product_id AND i.investor_id = ${investorId}
+      WHERE p.status = 'active'
+        AND i.id IS NULL
+      ORDER BY p.like_count DESC, p.created_at DESC
+      LIMIT ${limit}
+    `;
+  }
+
   return result.rows;
 }
 
