@@ -106,34 +106,37 @@ export async function createProduct(data: {
 }
 
 export async function updateProduct(id: string, data: Partial<Product>): Promise<Product> {
-  const updates: string[] = [];
-  const values: any[] = [];
+  const setFields: string[] = [];
+  const values: any[] = [id];
+  let paramIndex = 2; // Start at 2 since $1 is the id
 
-  if (data.title) {
-    updates.push(`title = $${values.length + 1}`);
+  if (data.title !== undefined) {
+    setFields.push(`title = $${paramIndex++}`);
     values.push(data.title);
   }
-  if (data.description_7words) {
-    updates.push(`description_7words = $${values.length + 1}`);
+  if (data.description_7words !== undefined) {
+    setFields.push(`description_7words = $${paramIndex++}`);
     values.push(data.description_7words);
   }
-  if (data.status) {
-    updates.push(`status = $${values.length + 1}`);
+  if (data.status !== undefined) {
+    setFields.push(`status = $${paramIndex++}`);
     values.push(data.status);
   }
 
-  if (updates.length === 0) {
+  if (setFields.length === 0) {
     throw new Error('No fields to update');
   }
 
-  updates.push('updated_at = NOW()');
+  setFields.push('updated_at = NOW()');
 
-  const result = await sql<Product>`
+  const query = `
     UPDATE products
-    SET ${sql.raw(updates.join(', '))}
-    WHERE id = ${id}
+    SET ${setFields.join(', ')}
+    WHERE id = $1
     RETURNING *
   `;
+
+  const result = await sql.query<Product>(query, values);
   return result.rows[0];
 }
 
