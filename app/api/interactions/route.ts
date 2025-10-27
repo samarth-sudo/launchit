@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
       video_completion_pct: video_completion_pct || 0,
       replay_count: replay_count || 0,
       clicked_founder_profile: clicked_founder_profile || false,
-      ai_intent_score,
-      ai_reasoning,
+      ai_intent_score: ai_intent_score ?? undefined,
+      ai_reasoning: ai_reasoning ?? undefined,
     });
 
     // Check if this creates a match (for likes)
