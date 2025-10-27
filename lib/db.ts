@@ -98,7 +98,7 @@ export async function createProduct(data: {
     VALUES (
       ${data.founder_id}, ${data.title}, ${data.description_7words}, ${data.full_description || null},
       ${JSON.stringify(data.demo_video)}, ${JSON.stringify(data.pricing)},
-      ${data.category}, ${data.tags || []}, ${data.ai_generated_summary || null}
+      ${data.category}, ${JSON.stringify(data.tags || [])}::jsonb::text[], ${data.ai_generated_summary || null}
     )
     RETURNING *
   `;
