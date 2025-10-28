@@ -95,6 +95,15 @@ export default function DiscoverPage() {
     alert(`🎉 It's a match! You and ${product.founder?.profile.name || 'the founder'} are interested in each other.`);
   };
 
+  const handleMessage = (product: ProductWithAIInsights) => {
+    if (!product.founder_id) {
+      alert('Unable to message this founder');
+      return;
+    }
+    // Navigate to message page with this founder
+    router.push(`/messages/${product.founder_id}`);
+  };
+
   const handleFeatureClick = (feature: string) => {
     if (currentTier !== 'investor') {
       setPaywallFeature(feature);
@@ -136,8 +145,15 @@ export default function DiscoverPage() {
                 <p className="text-xl font-bold text-black">{swipeCount}</p>
               </div>
               <button
+                onClick={() => router.push('/messages')}
+                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition font-medium flex items-center gap-2"
+              >
+                <span>💬</span>
+                <span>Messages</span>
+              </button>
+              <button
                 onClick={() => router.push('/matches')}
-                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition font-medium"
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:border-black hover:text-black transition font-medium"
               >
                 Matches
               </button>
@@ -230,6 +246,7 @@ export default function DiscoverPage() {
               onCardLeftScreen={(product) => {
                 console.log('Card left screen:', product.id);
               }}
+              onMessage={handleMessage}
             />
           )}
         </div>

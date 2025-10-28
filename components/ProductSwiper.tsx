@@ -8,9 +8,10 @@ interface ProductSwiperProps {
   products: ProductWithAIInsights[];
   onSwipe: (direction: 'left' | 'right' | 'up', product: ProductWithAIInsights) => Promise<void>;
   onCardLeftScreen?: (product: ProductWithAIInsights) => void;
+  onMessage?: (product: ProductWithAIInsights) => void;
 }
 
-export default function ProductSwiper({ products, onSwipe, onCardLeftScreen }: ProductSwiperProps) {
+export default function ProductSwiper({ products, onSwipe, onCardLeftScreen, onMessage }: ProductSwiperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swiping, setSwiping] = useState(false);
   const [exitDirection, setExitDirection] = useState<'left' | 'right' | 'up' | null>(null);
@@ -202,6 +203,19 @@ export default function ProductSwiper({ products, onSwipe, onCardLeftScreen }: P
       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg z-10">
         ← Pass | ↑ Super Like | → Like
       </div>
+
+      {/* Message Button */}
+      {onMessage && currentProduct && (
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            onClick={() => onMessage(currentProduct)}
+            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition"
+          >
+            <span className="text-xl">💬</span>
+            <span className="text-sm font-semibold">Message</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -260,6 +274,67 @@ function ProductCard({ product }: { product: ProductWithAIInsights }) {
 
       {/* AI Insights Panel - 40% width on desktop */}
       <div className="col-span-1 md:col-span-2 p-6 overflow-y-auto bg-gray-50">
+        {/* Trial Code - Show to early adopters and investors */}
+        {product.metrics?.trial_code && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-md">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">🎁</span>
+              <h3 className="font-semibold text-white">Exclusive Trial Code</h3>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded px-4 py-2 text-center">
+              <code className="text-white font-mono text-lg font-bold tracking-wider">
+                {product.metrics.trial_code}
+              </code>
+            </div>
+            <p className="text-white/90 text-xs mt-2">
+              Use this code to get early access
+            </p>
+          </div>
+        )}
+
+        {/* Product Metrics */}
+        {product.metrics && (
+          <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
+            <h3 className="font-semibold text-sm mb-3 text-gray-900 flex items-center gap-2">
+              <span>📊</span> Product Traction
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {product.metrics.total_users && (
+                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                  <div className="text-xl font-bold text-blue-900">
+                    {product.metrics.total_users.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Total Users</div>
+                </div>
+              )}
+              {product.metrics.paying_users && (
+                <div className="text-center p-3 bg-green-50 rounded-lg">
+                  <div className="text-xl font-bold text-green-900">
+                    {product.metrics.paying_users.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Paying Users</div>
+                </div>
+              )}
+              {product.metrics.free_users && (
+                <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <div className="text-xl font-bold text-purple-900">
+                    {product.metrics.free_users.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Free Users</div>
+                </div>
+              )}
+              {product.metrics.revenue && (
+                <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                  <div className="text-xl font-bold text-yellow-900">
+                    ${product.metrics.revenue.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Revenue</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* AI Match Score */}
         {product.ai_match_score && (
           <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
